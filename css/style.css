@@ -1,0 +1,94 @@
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    color: black;
+    background-color: #eee;
+
+    /* Sizing */
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+
+    /* Content arrangement */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        color: white;
+        background-color: black;
+    }
+}
+
+#calculator {
+    background-color: #888;
+    padding: 0.5rem 0.9rem;
+    border: solid 3px #555;
+    border-radius: 2vw;
+
+    /* Size */
+    width: 90%;
+    height: 90%;
+    max-width: 25rem;
+    max-height: 30rem;
+
+    /* Content arrangement */
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: stretch;
+}
+
+#calculator .screen-row, #calculator .button-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    align-items: stretch;
+}
+
+#calculator .screen-row {
+    flex: 1;
+    margin-bottom: 1vh;
+}
+
+#calculator input {
+    font-size: 2.5rem;
+    text-align: right;
+    padding: 0 1rem;
+    width: 100%;
+}
+
+#calculator .button-row {
+    flex: 1;
+}
+
+#calculator button {
+    font-size: 2.2rem;
+    display: block;
+    flex: 1;
+}
+
+/* Extra Small screens */
+@media (max-width: 360px) or (max-height: 480px) {
+    #calculator {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        border-radius: 0;
+    }
+
+    #calculator input {
+        font-size: 2rem;
+    }
+
+    #calculator button {
+        font-size: 1.8rem;
+    }
+}
