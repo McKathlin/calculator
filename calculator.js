@@ -1,31 +1,32 @@
 //=============================================================================
-// Calculator
-// by McKathlin
+// Globals
 //=============================================================================
 
 const Calculator = {};
+
+Calculator.latestOperand = 0;
+Calculator.previousOperand = null;
+Calculator.operand = null;
 
 //=============================================================================
 // UI Setup
 //=============================================================================
 
-Calculator.screenInput = document.querySelector("input#screen");
+Calculator.screenNode = document.querySelector("#screen");
 console.log(Calculator.screenNode);
 
 document.querySelector("button#evaluate").addEventListener("click", (e) => {
     console.log("Evaluate");
-    const expression = Calculator.screenInput.value;
+    const expression = Calculator.screenNode.innerText;
     const result = Calculator.evaluateExpression(expression);
     const resultText = Number.isNaN(result) ? "ERROR" : result.toString();
-    Calculator.screenInput.value = resultText;
+    Calculator.screenNode.innerText = resultText;
 });
 
 document.querySelector("button#clear").addEventListener("click", (e) => {
     console.log("Clear");
-    Calculator.screenInput.value = "";
+    Calculator.screenNode.innerText = "";
 });
-
-// TODO: Implement backspace button
 
 // TODO: Implement number buttons
 
@@ -36,16 +37,43 @@ document.querySelector("button#clear").addEventListener("click", (e) => {
 //=============================================================================
 // Calculator Logic
 //=============================================================================
-// Public Controls
-//-----------------------------------------------------------------------------
 
-Calculator.evaluateExpression = function(expression) {
-    // TODO: Implement
-    return Number.NaN;
+Calculator.appendDigit = function(digit) {
+    // TODO
 };
 
-//-----------------------------------------------------------------------------
-// Private Helper Methods
-//-----------------------------------------------------------------------------
+Calculator.appendBinaryOperator = function(operatorName) {
+    // TODO
+};
 
+Calculator.operate = function(funcOperate, a, b) {
+    return funcOperate(a, b);
+};
 
+// Binary operations
+
+Calculator.add = function(a, b) {
+    return a + b;
+};
+
+Calculator.subtract = function(a, b) {
+    return a - b;
+};
+
+Calculator.multiply = function(a, b) {
+    return a * b;
+};
+
+Calculator.divide = function(a, b) {
+    return a / b;
+};
+
+// Unary operations
+
+Calculator.squareRoot = function(num) {
+    return Math.sqrt(num);
+}
+
+Calculator.square = function(num) {
+    return num * num;
+};

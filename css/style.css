@@ -58,7 +58,8 @@ body {
     margin-bottom: 1vh;
 }
 
-#calculator input {
+#calculator #screen {
+    background-color: #bc9;
     font-size: 2.5rem;
     text-align: right;
     padding: 0 1rem;
@@ -84,7 +85,7 @@ body {
         border-radius: 0;
     }
 
-    #calculator input {
+    #calculator #screen {
         font-size: 2rem;
     }
 
