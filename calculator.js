@@ -4,28 +4,29 @@
 
 const Calculator = {};
 
-Calculator.latestOperand = 0;
+Calculator.buttonType = { none: 0, digit: 1, operator: 2 };
+Calculator.EMPTY_TEXT = "0";
+Calculator.ERROR_TEXT = "ERROR";
+
+Calculator.currentText = "";
 Calculator.previousOperand = null;
-Calculator.operand = null;
+Calculator.operateFunction = null;
+Calculator.lastButtonType = Calculator.buttonType.none;
 
 //=============================================================================
 // UI Setup
 //=============================================================================
 
-Calculator.screenNode = document.querySelector("#screen");
-console.log(Calculator.screenNode);
+Calculator.resultNode = document.querySelector("#result");
+Calculator.operatorButtons = document.querySelectorAll("button.operator");
+Calculator.digitButtons = document.querySelectorAll
 
 document.querySelector("button#evaluate").addEventListener("click", (e) => {
-    console.log("Evaluate");
-    const expression = Calculator.screenNode.innerText;
-    const result = Calculator.evaluateExpression(expression);
-    const resultText = Number.isNaN(result) ? "ERROR" : result.toString();
-    Calculator.screenNode.innerText = resultText;
+    // TODO: Implement
 });
 
 document.querySelector("button#clear").addEventListener("click", (e) => {
-    console.log("Clear");
-    Calculator.screenNode.innerText = "";
+    Calculator.clear();
 });
 
 // TODO: Implement number buttons
@@ -34,15 +35,41 @@ document.querySelector("button#clear").addEventListener("click", (e) => {
 
 // TODO: Implement operator buttons
 
+document.addEventListener("DOMContentLoaded", (e) => {
+    console.log("Loaded!");
+    Calculator.clear();
+});
+
+//=============================================================================
+// UI Update
+//=============================================================================
+
+Calculator.updateUI = function() {
+    Calculator.resultNode.innerText = Calculator.currentText;
+    // TODO: Enable/disable buttons as needed
+};
+
 //=============================================================================
 // Calculator Logic
 //=============================================================================
+
+Calculator.backspace = function() {
+    Calculator.currentText = Calculator.currentText.slice(0, -1);
+    Calculator.updateUI();
+};
+
+Calculator.clear = function() {
+    Calculator.previousOperand = null;
+    Calculator.operateFunction = null;
+    Calculator.currentText = "0";
+    Calculator.updateUI();
+};
 
 Calculator.appendDigit = function(digit) {
     // TODO
 };
 
-Calculator.appendBinaryOperator = function(operatorName) {
+Calculator.setBinaryOperator = function(operatorName) {
     // TODO
 };
 
