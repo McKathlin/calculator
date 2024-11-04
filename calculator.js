@@ -99,10 +99,15 @@ Calculator._currentState = Calculator.state.normal;
 Object.defineProperties(Calculator, {
     currentNumber: {
         get: function() {
-            return Number.parseFloat(this.currentText);
+            if (this.currentState == Calculator.state.postOp) {
+                return null;
+            } else {
+                return Number.parseFloat(this.currentText);
+            }
         },
         set: function(value) {
-            if (Math.isNaN(value)) {
+            value = value ?? 0;
+            if (Number.isNaN(value)) {
                 this.currentState = Calculator.state.error;
             }
             this.currentText = value.toString();
@@ -113,8 +118,10 @@ Object.defineProperties(Calculator, {
             return this._currentState;
         },
         set: function(value) {
-            this._currentState = value;
-            this.updateUI();
+            if (this._currentState !== value) {
+                this._currentState = value;
+                this.updateUI();
+            }
         }
     },
     currentText: {
@@ -202,18 +209,22 @@ Calculator.appendDecimalPoint = function() {
 };
 
 Calculator.setBinaryOperator = function(operatorName) {
-    this.currentState = Calculator.state.postOp;
     this.operator = operatorName;
     this.previousNumber = this.currentNumber;
-    this.currentNumber = 0;
+    this.currentNumber = null;
+    this.currentState = Calculator.state.postOp;
 };
 
 Calculator.evaluate = function() {
-    if (this.operator) {
+    if (this.previousNumber !== null && this.currentNumber !== null
+    && this.operator !== null) {
         result = this.operate(
             this.operator, this.previousNumber, this.currentNumber);
         this.currentNumber = result;
+    } else {
+        this.currentNumber = this.currentNumber ?? this.previousNumber ?? 0;
     }
+    this.previousNumber = null;
 };
 
 Calculator.applySquare = function() {
