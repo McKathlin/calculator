@@ -84,6 +84,21 @@ Calculator.updateUI = function() {
 //=============================================================================
 // Calculator Logic
 //=============================================================================
+
+Object.defineProperties(Calculator, {
+    currentNumber: {
+        get: function() {
+            return Number.parseFloat(Calculator.currentText);
+        },
+        set: function(value) {
+            if (Math.isNaN(value)) {
+                Calculator._errorState = true;
+            }
+            Calculator.currentText = value.toString();
+        }
+    }
+});
+
 // Button functions
 //-----------------------------------------------------------------------------
 
@@ -185,10 +200,3 @@ Calculator.square = function(num) {
     return num * num;
 };
 
-//-----------------------------------------------------------------------------
-// Helper functions
-//-----------------------------------------------------------------------------
-
-Calculator._getCurrentNumber = function() {
-    return Number.parseFloat(Calculator.currentText);
-};
