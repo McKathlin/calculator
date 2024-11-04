@@ -126,6 +126,29 @@ Object.defineProperties(Calculator, {
             }
             this.updateUI();
         }
+    },
+    operator: {
+        get: function() {
+            return this._operator;
+        },
+        set: function(value) {
+            value = value.toLowerCase();
+            if (value == "+" || value == "plus" || value.startsWith("add")) {
+                this._operator = "+";
+                this.operatorFunction = Calculator.add;
+            } else if (value == '-' || value == "minus"
+            || value.startsWith("sub")) {
+                this._operator = "-";
+                this.operatorFunction = Calculator.subtract;
+            } else if (value == "*" || value == "x" || value == "times"
+            || value.startsWith("mult")) {
+                this._operator = "*";
+                this.operatorFunction = Calculator.multiply;
+            } else if (value == "/" || value.startsWith("div")) {
+                this._operator = "/";
+                this.operatorFunction = Calculator.divide;
+            }
+        }
     }
 });
 
