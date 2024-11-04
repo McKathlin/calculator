@@ -90,6 +90,8 @@ Calculator.updateUI = function() {
 
 Calculator.EMPTY_TEXT = "0";
 Calculator.ERROR_TEXT = "ERROR";
+Calculator.OVERFLOW_TEXT = "OVERFLOW";
+Calculator.INFINITY_TEXT = "NOPE";
 Calculator.MAX_OUTPUT_LENGTH = 12;
 Calculator.ELLIPSIS = "\u{2026}";
 
@@ -125,9 +127,11 @@ Object.defineProperties(Calculator, {
         },
         set: function(value) {
             value = value ?? 0;
-            if (Number.isNaN(value) || !Number.isFinite(value)) {
+            if (Number.isNaN(value)) {
                 this.currentState = Calculator.state.error;
                 this.currentText = Calculator.ERROR_TEXT;
+            } else if (!Number.isFinite(value)) {
+                this.currentText = Calculator.INFINITY_TEXT;
             } else {
                 this.currentText = value.toString();
             }
@@ -142,15 +146,12 @@ Object.defineProperties(Calculator, {
                 // Can't leave an error state using this setter.
             } else if (this._currentState !== value) {
                 this._currentState = value;
-                this.updateUI();
             }
         }
     },
     currentText: {
         get: function() {
-            if (this.currentState == Calculator.state.error) {
-                return this.ERROR_TEXT;
-            } else if (this.currentState == Calculator.state.postOp) {
+            if (this.currentState == Calculator.state.postOp) {
                 return this.previousNumber.toString();
             } else {
                 return this._currentText;
@@ -169,6 +170,7 @@ Object.defineProperties(Calculator, {
                 }
                 if (preDecimalLength >= ellipsisBufferLength) {
                     this.currentState = Calculator.state.error;
+                    this._currentText = Calculator.OVERFLOW_TEXT;
                 } else {
                     this._currentText = value.slice(
                         0, this.MAX_OUTPUT_LENGTH - 1) + this.ELLIPSIS;
@@ -224,6 +226,9 @@ Calculator.clear = function() {
 };
 
 Calculator.appendDigit = function(digit) {
+    if (this.currentState == Calculator.state.error) {
+        return; // Can't append during an error
+    }
     this.currentState = Calculator.state.normal;
     if (this.currentText == Calculator.EMPTY_TEXT) {
         this.currentText = digit;
@@ -233,15 +238,22 @@ Calculator.appendDigit = function(digit) {
 };
 
 Calculator.appendDecimalPoint = function() {
+    if (this.currentState == Calculator.state.error) {
+        return; // Can't append during an error
+    }
     this.currentState = Calculator.state.normal;
     if (this.currentText.includes(".")) {
         this.currentState = Calculator.state.error;
+        this.currentText = Calculator.ERROR_TEXT;
     } else {
         this.currentText += ".";
     }
 };
 
 Calculator.setBinaryOperator = function(operatorName) {
+    if (this.currentState == Calculator.state.error) {
+        return; // Can't operate during an error
+    }
     this.evaluate(); // Calculate previous operation, if any
     this.operator = operatorName;
     this.previousNumber = this.currentNumber;
@@ -250,6 +262,9 @@ Calculator.setBinaryOperator = function(operatorName) {
 };
 
 Calculator.evaluate = function() {
+    if (this.currentState == Calculator.state.error) {
+        return; // Can't evaluate during an error
+    }
     if (this.previousNumber !== null && this.currentNumber !== null
     && this.operator !== null) {
         result = this.operate(
@@ -263,11 +278,17 @@ Calculator.evaluate = function() {
 };
 
 Calculator.applySquareRoot = function() {
+    if (this.currentState == Calculator.state.error) {
+        return; // Can't append during an error
+    }
     this.currentNumber = this.squareRoot(this.currentNumber);
     this.currentState = Calculator.state.postSquareRoot;
 };
 
 Calculator.applySquare = function() {
+    if (this.currentState == Calculator.state.error) {
+        return; // Can't append during an error
+    }
     this.currentNumber = this.square(this.currentNumber);
     this.currentState = Calculator.state.postSquare;
 };
