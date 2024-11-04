@@ -77,7 +77,8 @@ document.addEventListener("DOMContentLoaded", (e) => {
 //=============================================================================
 
 Calculator.updateUI = function() {
-    this.resultNode.innerText = this.currentText;
+    this.resultNode.innerText =
+        this.currentText ?? this.previousText ?? this.EMPTY_TEXT;
     
     // TODO: Enable/disable buttons as needed
 };
@@ -126,8 +127,9 @@ Object.defineProperties(Calculator, {
             }
         },
         set: function(value) {
-            value = value ?? 0;
-            if (Number.isNaN(value)) {
+            if (null == value) {
+                this.currentText = null;
+            } else if (Number.isNaN(value)) {
                 this.currentState = Calculator.state.error;
                 this.currentText = Calculator.ERROR_TEXT;
             } else if (!Number.isFinite(value)) {
@@ -151,16 +153,15 @@ Object.defineProperties(Calculator, {
     },
     currentText: {
         get: function() {
-            if (this.currentState == Calculator.state.postOp) {
-                return this.previousNumber.toString();
-            } else {
-                return this._currentText;
-            }
+            return this._currentText;
         },
         set: function(value) {
             if (value == this._currentText) {
                 return; // No change.
-            } if (value == "") {
+            } else if (value === null) {
+                // This will make the display fall through to previous text
+                this._currentText = null;
+            } else if (value === "") {
                 this._currentText = this.EMPTY_TEXT;
             } else if (value.length > this.MAX_OUTPUT_LENGTH) {
                 const ellipsisBufferLength = this.MAX_OUTPUT_LENGTH - 2;
@@ -191,6 +192,12 @@ Object.defineProperties(Calculator, {
             } else {
                 this._operator = null;
             }
+        }
+    },
+    previousText: {
+        get: function() {
+            return this.previousNumber === null ?
+                null : this.previousNumber.toString();
         }
     }
 });
@@ -230,7 +237,7 @@ Calculator.appendDigit = function(digit) {
         return; // Can't append during an error
     }
     this.currentState = Calculator.state.normal;
-    if (this.currentText == Calculator.EMPTY_TEXT) {
+    if (!this.currentText || this.currentText == Calculator.EMPTY_TEXT) {
         this.currentText = digit;
     } else {
         this.currentText += digit;
