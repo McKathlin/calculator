@@ -120,7 +120,7 @@ Object.defineProperties(Calculator, {
             if (value == this._currentText) {
                 return; // No change.
             } if (value == "") {
-                this._currentText = Calculator.EMPTY_TEXT;
+                this._currentText = this.EMPTY_TEXT;
             } else {
                 this._currentText = value;
             }
@@ -149,7 +149,6 @@ Calculator.backspace = function() {
             Calculator.currentText = Calculator.EMPTY_TEXT;
         }
     }
-    Calculator.updateUI();
 };
 
 Calculator.clear = function() {
@@ -158,7 +157,6 @@ Calculator.clear = function() {
     Calculator.operateFunction = null;
     Calculator.currentText = Calculator.EMPTY_TEXT;
     Calculator.errorState = false;
-    Calculator.updateUI();
 };
 
 Calculator.appendDigit = function(digit) {
@@ -168,7 +166,6 @@ Calculator.appendDigit = function(digit) {
     } else {
         Calculator.currentText += digit;
     }
-    Calculator.updateUI();
 };
 
 Calculator.appendDecimalPoint = function() {
@@ -178,7 +175,6 @@ Calculator.appendDecimalPoint = function() {
     } else {
         Calculator.currentText += ".";
     }
-    Calculator.updateUI();
 };
 
 Calculator.setBinaryOperator = function(operatorName) {
