@@ -4,7 +4,7 @@
 
 const Calculator = {};
 
-Calculator.buttonType = { none: 0, digit: 1, operator: 2 };
+Calculator.buttonType = { none: 0, digit: 1, operator: 2, unary: 3 };
 Calculator.EMPTY_TEXT = "0";
 Calculator.ERROR_TEXT = "ERROR";
 
@@ -18,22 +18,38 @@ Calculator.lastButtonType = Calculator.buttonType.none;
 //=============================================================================
 
 Calculator.resultNode = document.querySelector("#result");
-Calculator.operatorButtons = document.querySelectorAll("button.operator");
-Calculator.digitButtons = document.querySelectorAll
 
-document.querySelector("button#evaluate").addEventListener("click", (e) => {
-    // TODO: Implement
+// Unique buttons
+Calculator.backspaceButton = document.querySelector("button#backspace");
+Calculator.clearButton = document.querySelector("button#clear");
+Calculator.decimalPointButton = document.querySelector("button#decimal-point");
+Calculator.equalsButton = document.querySelector("button#equals");
+
+// Button groups
+Calculator.operatorButtons = document.querySelectorAll("button.operator");
+Calculator.digitButtons = document.querySelectorAll("button.digit");
+
+backspaceButton.addEventListener("click", (e) => {
+    // TODO
 });
 
-document.querySelector("button#clear").addEventListener("click", (e) => {
+clearButton.addEventListener("click", (e) => {
     Calculator.clear();
+});
+
+decimalPointButton.addEventListener("click", (e) => {
+    // TODO
+});
+
+equalsButton.addEventListener("click", (e) => {
+    // TODO
 });
 
 // TODO: Implement number buttons
 
-// TODO: Implement decimal point button
-
 // TODO: Implement operator buttons
+
+// TODO: Implement unary buttons
 
 document.addEventListener("DOMContentLoaded", (e) => {
     console.log("Loaded!");
@@ -49,6 +65,10 @@ Calculator.updateUI = function() {
     // TODO: Enable/disable buttons as needed
 };
 
+Calculator.getCurrentNumber = function() {
+    return Number.parseFloat(Calculator.currentText);
+};
+
 //=============================================================================
 // Calculator Logic
 //=============================================================================
@@ -61,7 +81,7 @@ Calculator.backspace = function() {
 Calculator.clear = function() {
     Calculator.previousOperand = null;
     Calculator.operateFunction = null;
-    Calculator.currentText = "0";
+    Calculator.currentText = Calculator.EMPTY_TEXT;
     Calculator.updateUI();
 };
 
