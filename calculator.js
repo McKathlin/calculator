@@ -1,12 +1,9 @@
 //=============================================================================
-// Globals
+// Calculator
+// by McKathlin
 //=============================================================================
 
 const Calculator = {};
-
-Calculator.EMPTY_TEXT = "0";
-Calculator.ERROR_TEXT = "ERROR";
-
 
 //=============================================================================
 // UI Setup
@@ -75,23 +72,25 @@ Calculator.updateUI = function() {
 // Constants
 //-----------------------------------------------------------------------------
 
-Calculator.buttonType = {
-    none: 0,
-    digit: 1,
-    operator: 2,
-    square: 3,
-    squareRoot: 4
+Calculator.EMPTY_TEXT = "0";
+Calculator.ERROR_TEXT = "ERROR";
+
+Calculator.state = {
+    error: -1,
+    normal: 0,
+    postOp: 1,
+    postSquare: 2,
+    postSquareRoot: 3
 };
 
 //-----------------------------------------------------------------------------
 // Variables
 //-----------------------------------------------------------------------------
 
-Calculator.errorState = false;
 Calculator.previousNumber = null;
-Calculator.lastButtonType = Calculator.buttonType.none;
 
 Calculator._currentText = "";
+Calculator._currentState = Calculator.state.normal;
 
 //-----------------------------------------------------------------------------
 // Properties
@@ -104,16 +103,25 @@ Object.defineProperties(Calculator, {
         },
         set: function(value) {
             if (Math.isNaN(value)) {
-                this._errorState = true;
+                this.currentState = Calculator.state.error;
             }
             this.currentText = value.toString();
         }
     },
+    currentState: {
+        get: function() {
+            return this._currentState;
+        },
+        set: function(value) {
+            this._currentState = value;
+            this.updateUI();
+        }
+    },
     currentText: {
         get: function() {
-            if (this.errorState) {
+            if (this.currentState == Calculator.state.error) {
                 return this.ERROR_TEXT;
-            } else if (this.lastButtonType == Calculator.buttonType.operator) {
+            } else if (this.currentState == Calculator.state.postOp) {
                 return this.previousNumber.toString();
             } else {
                 return this._currentText;
@@ -149,17 +157,17 @@ Object.defineProperties(Calculator, {
 //-----------------------------------------------------------------------------
 
 Calculator.backspace = function() {
-    if (this.errorState) {
+    if (this.currentState == Calculator.state.error) {
         // Don't change error state.
     } else if (this.currentText == Calculator.EMPTY_TEXT) {
         // Already empty. Do nothing.
-    } else if (this.lastButtonType == Calculator.buttonType.operator) {
+    } else if (this.currentState == Calculator.state.postOp) {
         // Undo operator selection.
         this.operateFunction = null;
-        this.lastButtonType = Calculator.buttonType.none;
+        this.currentState = Calculator.state.normal;
     } else {
         // Remove the last character.
-        Calculator.lastButtonType = Calculator.buttonType.none;
+        Calculator.currentState = Calculator.state.normal;
         this.currentText = Calculator.currentText.slice(0, -1);
         if (this.currentText == "") {
             this.currentText = Calculator.EMPTY_TEXT;
@@ -168,15 +176,15 @@ Calculator.backspace = function() {
 };
 
 Calculator.clear = function() {
-    this.lastButtonType = Calculator.buttonType.none;
+    this.currentState = Calculator.state.normal;
     this.previousOperand = null;
     this.operateFunction = null;
     this.currentText = Calculator.EMPTY_TEXT;
-    this.errorState = false;
+    this.currentState = Calculator.state.normal;
 };
 
 Calculator.appendDigit = function(digit) {
-    this.lastButtonType = Calculator.buttonType.digit;
+    this.currentState = Calculator.state.normal;
     if (this.currentText == Calculator.EMPTY_TEXT) {
         this.currentText = digit;
     } else {
@@ -185,16 +193,16 @@ Calculator.appendDigit = function(digit) {
 };
 
 Calculator.appendDecimalPoint = function() {
-    this.lastButtonType = Calculator.buttonType.digit;
+    this.currentState = Calculator.state.normal;
     if (this.currentText.includes(".")) {
-        this.errorState = true;
+        this.currentState = Calculator.state.error;
     } else {
         this.currentText += ".";
     }
 };
 
 Calculator.setBinaryOperator = function(operatorName) {
-    this.lastButtonType = Calculator.buttonType.operator;
+    this.currentState = Calculator.state.postOp;
     this.operator = operatorName;
     this.previousNumber = this.currentNumber;
     this.currentNumber = 0;
