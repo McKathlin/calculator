@@ -61,9 +61,9 @@ document.addEventListener("DOMContentLoaded", (e) => {
 
 Calculator.updateUI = function() {
     if (Calculator.errorState) {
-        Calculator.resultNode.innerText = Calculator.ERROR_TEXT;
+        this.resultNode.innerText = Calculator.ERROR_TEXT;
     } else {
-        Calculator.resultNode.innerText = Calculator.currentText;
+        this.resultNode.innerText = this.currentText;
     }
     
     // TODO: Enable/disable buttons as needed
@@ -156,52 +156,52 @@ Object.defineProperties(Calculator, {
 //-----------------------------------------------------------------------------
 
 Calculator.backspace = function() {
-    if (Calculator.errorState) {
+    if (this.errorState) {
         // Don't change error state.
-    } else if (Calculator.currentText == Calculator.EMPTY_TEXT) {
+    } else if (this.currentText == Calculator.EMPTY_TEXT) {
         // Already empty. Do nothing.
-    } else if (Calculator.lastButtonType == Calculator.buttonType.operator) {
+    } else if (this.lastButtonType == Calculator.buttonType.operator) {
         // Undo operator selection.
-        Calculator.operateFunction = null;
-        Calculator.lastButtonType = Calculator.buttonType.none;
+        this.operateFunction = null;
+        this.lastButtonType = Calculator.buttonType.none;
     } else {
         // Remove the last character.
         Calculator.lastButtonType = Calculator.buttonType.none;
-        Calculator.currentText = Calculator.currentText.slice(0, -1);
-        if (Calculator.currentText == "") {
-            Calculator.currentText = Calculator.EMPTY_TEXT;
+        this.currentText = Calculator.currentText.slice(0, -1);
+        if (this.currentText == "") {
+            this.currentText = Calculator.EMPTY_TEXT;
         }
     }
 };
 
 Calculator.clear = function() {
-    Calculator.lastButtonType = Calculator.buttonType.none;
-    Calculator.previousOperand = null;
-    Calculator.operateFunction = null;
-    Calculator.currentText = Calculator.EMPTY_TEXT;
-    Calculator.errorState = false;
+    this.lastButtonType = Calculator.buttonType.none;
+    this.previousOperand = null;
+    this.operateFunction = null;
+    this.currentText = Calculator.EMPTY_TEXT;
+    this.errorState = false;
 };
 
 Calculator.appendDigit = function(digit) {
-    Calculator.lastButtonType = Calculator.buttonType.digit;
-    if (Calculator.currentText == Calculator.EMPTY_TEXT) {
-        Calculator.currentText = digit;
+    this.lastButtonType = Calculator.buttonType.digit;
+    if (this.currentText == Calculator.EMPTY_TEXT) {
+        this.currentText = digit;
     } else {
-        Calculator.currentText += digit;
+        this.currentText += digit;
     }
 };
 
 Calculator.appendDecimalPoint = function() {
-    Calculator.lastButtonType = Calculator.buttonType.digit;
-    if (Calculator.currentText.includes(".")) {
-        Calculator.errorState = true;
+    this.lastButtonType = Calculator.buttonType.digit;
+    if (this.currentText.includes(".")) {
+        this.errorState = true;
     } else {
-        Calculator.currentText += ".";
+        this.currentText += ".";
     }
 };
 
 Calculator.setBinaryOperator = function(operatorName) {
-    Calculator.lastButtonType = Calculator.buttonType.operator;
+    this.lastButtonType = Calculator.buttonType.operator;
     // TODO
 };
 
