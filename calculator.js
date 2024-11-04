@@ -120,11 +120,7 @@ Calculator._currentState = Calculator.state.normal;
 Object.defineProperties(Calculator, {
     currentNumber: {
         get: function() {
-            if (this.currentState == Calculator.state.postOp) {
-                return null;
-            } else {
-                return Number.parseFloat(this.currentText);
-            }
+            return Number.parseFloat(this.currentText);
         },
         set: function(value) {
             if (null == value) {
@@ -234,7 +230,9 @@ Calculator.clear = function() {
 
 Calculator.appendDigit = function(digit) {
     if (this.currentState == Calculator.state.error) {
-        return; // Can't append during an error
+        this.clear(); // Start fresh
+    } else if (this.currentState == Calculator.state.postOp) {
+        this.currentText = null; // Prepare to take a new number
     }
     this.currentState = Calculator.state.normal;
     if (!this.currentText || this.currentText == Calculator.EMPTY_TEXT) {
@@ -280,8 +278,7 @@ Calculator.evaluate = function() {
     } else {
         this.currentNumber = this.currentNumber ?? this.previousNumber ?? 0;
     }
-    this.previousNumber = null;
-    this.currentState = Calculator.state.normal;
+    this.currentState = Calculator.state.postOp;
 };
 
 Calculator.applySquareRoot = function() {
