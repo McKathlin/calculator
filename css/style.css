@@ -30,15 +30,16 @@ body {
 #calculator {
     color: black;
     background-color: #889;
-    padding: 0.5rem 0.9rem;
+    padding: 0.6rem 0.8rem 1.1rem 0.8rem;
     border: solid 3px #556;
-    border-radius: 2vw;
+    box-shadow: 3px 6px #445;
+    border-radius: 15px;
 
     /* Size */
     width: 90%;
     height: 90%;
     max-width: 25rem;
-    max-height: 30rem;
+    max-height: 35rem;
 
     /* Content arrangement */
     display: flex;
@@ -61,6 +62,7 @@ body {
     color: black;
     background-color: #bca;
     border: solid 3px #556;
+    box-shadow: inset 3px 6px #00002030;
     text-align: right;
     padding: 0 1rem;
     width: 100%;
@@ -87,6 +89,20 @@ body {
     font-size: 2.2rem;
     display: block;
     flex: 1;
+
+    /* Raised 3-D look */
+    box-shadow: inset -2px -3px #00002030;
+    padding-top: 0;
+    padding-bottom: 2px;
+}
+
+#calculator button:active {
+    /* invert button shadow */
+    box-shadow: inset 2px 3px #00002030;
+
+    /* lower button text */
+    padding-top: 2px;
+    padding-bottom: 0;
 }
 
 #calculator button.operator {
