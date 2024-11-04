@@ -29,9 +29,9 @@ body {
 
 #calculator {
     color: black;
-    background-color: #888;
+    background-color: #889;
     padding: 0.5rem 0.9rem;
-    border: solid 3px #555;
+    border: solid 3px #556;
     border-radius: 2vw;
 
     /* Size */
@@ -59,7 +59,8 @@ body {
     flex: 1;
     margin-bottom: 1vh;
     color: black;
-    background-color: #bc9;
+    background-color: #bca;
+    border: solid 3px #556;
     text-align: right;
     padding: 0 1rem;
     width: 100%;
@@ -78,9 +79,30 @@ body {
 }
 
 #calculator button {
+    color: white;
+    background-color: #334;
+    border: 3px solid #00002060;
+    border-radius: 7px;
+    margin: 1px;
     font-size: 2.2rem;
     display: block;
     flex: 1;
+}
+
+#calculator button.operator {
+    background-color: #359;
+}
+
+#calculator button.unary {
+    background-color: #359;
+}
+
+#calculator button#backspace, #calculator button#clear {
+    background-color: #49a;
+}
+
+#calculator button#equals {
+    background-color: #a34;
 }
 
 /* Extra Small screens */
