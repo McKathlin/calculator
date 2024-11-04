@@ -46,7 +46,11 @@ Calculator.equalsButton.addEventListener("click", (e) => {
     // TODO
 });
 
-// TODO: Implement number buttons
+for (let button of Calculator.digitButtons) {
+    button.addEventListener("click", (e) => {
+        Calculator.appendDigit(e.target.id);
+    });
+}
 
 // TODO: Implement operator buttons
 
@@ -96,7 +100,11 @@ Calculator.clear = function() {
 };
 
 Calculator.appendDigit = function(digit) {
-    // TODO
+    if (Calculator.currentText == Calculator.EMPTY_TEXT) {
+        Calculator.currentText = "";
+    }
+    Calculator.currentText += digit;
+    Calculator.updateUI();
 };
 
 Calculator.appendDecimalPoint = function() {
