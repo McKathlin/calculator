@@ -4,21 +4,9 @@
 
 const Calculator = {};
 
-Calculator.buttonType = {
-    none: 0,
-    digit: 1,
-    operator: 2,
-    square: 3,
-    squareRoot: 4
-};
 Calculator.EMPTY_TEXT = "0";
 Calculator.ERROR_TEXT = "ERROR";
 
-Calculator.errorState = false;
-Calculator.currentText = "";
-Calculator.previousNumber = null;
-Calculator.operateFunction = null;
-Calculator.lastButtonType = Calculator.buttonType.none;
 
 //=============================================================================
 // UI Setup
@@ -84,17 +72,59 @@ Calculator.updateUI = function() {
 //=============================================================================
 // Calculator Logic
 //=============================================================================
+// Constants
+//-----------------------------------------------------------------------------
+Calculator.buttonType = {
+    none: 0,
+    digit: 1,
+    operator: 2,
+    square: 3,
+    squareRoot: 4
+};
+
+//-----------------------------------------------------------------------------
+// Variables
+//-----------------------------------------------------------------------------
+Calculator.errorState = false;
+Calculator.previousNumber = null;
+Calculator.operateFunction = null;
+Calculator.lastButtonType = Calculator.buttonType.none;
+
+Calculator._currentText = "";
+
+//-----------------------------------------------------------------------------
+// Properties
+//-----------------------------------------------------------------------------
 
 Object.defineProperties(Calculator, {
     currentNumber: {
         get: function() {
-            return Number.parseFloat(Calculator.currentText);
+            return Number.parseFloat(this.currentText);
         },
         set: function(value) {
             if (Math.isNaN(value)) {
-                Calculator._errorState = true;
+                this._errorState = true;
             }
-            Calculator.currentText = value.toString();
+            this.currentText = value.toString();
+        }
+    },
+    currentText: {
+        get: function() {
+            if (this.errorState) {
+                return this.ERROR_TEXT;
+            } else {
+                return this._currentText;
+            }
+        },
+        set: function(value) {
+            if (value == this._currentText) {
+                return; // No change.
+            } if (value == "") {
+                this._currentText = Calculator.EMPTY_TEXT;
+            } else {
+                this._currentText = value;
+            }
+            this.updateUI();
         }
     }
 });
@@ -134,9 +164,10 @@ Calculator.clear = function() {
 Calculator.appendDigit = function(digit) {
     Calculator.lastButtonType = Calculator.buttonType.digit;
     if (Calculator.currentText == Calculator.EMPTY_TEXT) {
-        Calculator.currentText = "";
+        Calculator.currentText = digit;
+    } else {
+        Calculator.currentText += digit;
     }
-    Calculator.currentText += digit;
     Calculator.updateUI();
 };
 
