@@ -278,6 +278,7 @@ Calculator.evaluate = function() {
     } else {
         this.currentNumber = this.currentNumber ?? this.previousNumber ?? 0;
     }
+    this.previousNumber = null;
     this.currentState = Calculator.state.postOp;
 };
 
