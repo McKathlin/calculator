@@ -55,6 +55,7 @@ body {
 }
 
 #calculator .screen-row {
+    font-family: monospace;
     flex: 1;
     margin-bottom: 1vh;
     color: black;
