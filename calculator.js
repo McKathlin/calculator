@@ -39,7 +39,7 @@ Calculator.clearButton.addEventListener("click", (e) => {
 });
 
 Calculator.decimalPointButton.addEventListener("click", (e) => {
-    // TODO
+    Calculator.appendDecimalPoint();
 });
 
 Calculator.equalsButton.addEventListener("click", (e) => {
@@ -113,6 +113,7 @@ Calculator.appendDecimalPoint = function() {
     } else {
         Calculator.currentText += ".";
     }
+    Calculator.updateUI();
 };
 
 Calculator.setBinaryOperator = function(operatorName) {
