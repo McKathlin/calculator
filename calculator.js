@@ -31,7 +31,7 @@ Calculator.operatorButtons = document.querySelectorAll("button.operator");
 Calculator.digitButtons = document.querySelectorAll("button.digit");
 
 Calculator.backspaceButton.addEventListener("click", (e) => {
-    // TODO
+    Calculator.backspace();
 });
 
 Calculator.clearButton.addEventListener("click", (e) => {
@@ -87,6 +87,9 @@ Calculator.backspace = function() {
     } else {
         // Remove the last character.
         Calculator.currentText = Calculator.currentText.slice(0, -1);
+        if (Calculator.currentText == "") {
+            Calculator.currentText = Calculator.EMPTY_TEXT;
+        }
     }
     Calculator.updateUI();
 };
