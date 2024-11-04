@@ -186,7 +186,7 @@ Calculator.backspace = function() {
 
 Calculator.clear = function() {
     this.currentState = Calculator.state.normal;
-    this.previousOperand = null;
+    this.previousNumber = null;
     this.operateFunction = null;
     this.currentText = Calculator.EMPTY_TEXT;
     this.currentState = Calculator.state.normal;
