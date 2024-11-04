@@ -8,6 +8,8 @@ const Calculator = {};
 //=============================================================================
 // UI Setup
 //=============================================================================
+// Node Handles
+//-----------------------------------------------------------------------------
 
 Calculator.resultNode = document.querySelector("#result");
 
@@ -18,8 +20,13 @@ Calculator.decimalPointButton = document.querySelector("button#decimal-point");
 Calculator.equalsButton = document.querySelector("button#equals");
 
 // Button groups
+Calculator.unaryOperatorButtons = document.querySelectorAll("button.unary");
 Calculator.operatorButtons = document.querySelectorAll("button.operator");
 Calculator.digitButtons = document.querySelectorAll("button.digit");
+
+//-----------------------------------------------------------------------------
+// Event Listeners
+//-----------------------------------------------------------------------------
 
 Calculator.backspaceButton.addEventListener("click", (e) => {
     Calculator.backspace();
@@ -49,10 +56,19 @@ for (let button of Calculator.operatorButtons) {
     });
 }
 
-// TODO: Implement unary buttons
+document.querySelector("button#square-root").addEventListener("click", (e) => {
+    Calculator.applySquareRoot();
+});
+
+document.querySelector("button#square").addEventListener("click", (e) => {
+    Calculator.applySquare();
+});
+
+//-----------------------------------------------------------------------------
+// Initialization
+//-----------------------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", (e) => {
-    console.log("Loaded!");
     Calculator.clear();
 });
 
@@ -74,6 +90,8 @@ Calculator.updateUI = function() {
 
 Calculator.EMPTY_TEXT = "0";
 Calculator.ERROR_TEXT = "ERROR";
+Calculator.MAX_OUTPUT_LENGTH = 12;
+Calculator.ELLIPSIS = "\u{2026}";
 
 Calculator.state = {
     error: -1,
@@ -120,7 +138,9 @@ Object.defineProperties(Calculator, {
             return this._currentState;
         },
         set: function(value) {
-            if (this._currentState !== value) {
+            if (this._currentState == Calculator.state.error) {
+                // Can't leave an error state using this setter.
+            } else if (this._currentState !== value) {
                 this._currentState = value;
                 this.updateUI();
             }
@@ -141,6 +161,18 @@ Object.defineProperties(Calculator, {
                 return; // No change.
             } if (value == "") {
                 this._currentText = this.EMPTY_TEXT;
+            } else if (value.length > this.MAX_OUTPUT_LENGTH) {
+                const ellipsisBufferLength = this.MAX_OUTPUT_LENGTH - 2;
+                let preDecimalLength = value.indexOf('.');
+                if (preDecimalLength < 0) {
+                    preDecimalLength = value.length;
+                }
+                if (preDecimalLength >= ellipsisBufferLength) {
+                    this.currentState = Calculator.state.error;
+                } else {
+                    this._currentText = value.slice(
+                        0, this.MAX_OUTPUT_LENGTH - 1) + this.ELLIPSIS;
+                }
             } else {
                 this._currentText = value;
             }
@@ -185,11 +217,10 @@ Calculator.backspace = function() {
 };
 
 Calculator.clear = function() {
-    this.currentState = Calculator.state.normal;
+    this._currentState = Calculator.state.normal;
     this.previousNumber = null;
     this.operateFunction = null;
     this.currentText = Calculator.EMPTY_TEXT;
-    this.currentState = Calculator.state.normal;
 };
 
 Calculator.appendDigit = function(digit) {
@@ -231,12 +262,14 @@ Calculator.evaluate = function() {
     this.currentState = Calculator.state.normal;
 };
 
-Calculator.applySquare = function() {
-    // TODO
+Calculator.applySquareRoot = function() {
+    this.currentNumber = this.squareRoot(this.currentNumber);
+    this.currentState = Calculator.state.postSquareRoot;
 };
 
-Calculator.applySquareRoot = function() {
-    // TODO
+Calculator.applySquare = function() {
+    this.currentNumber = this.square(this.currentNumber);
+    this.currentState = Calculator.state.postSquare;
 };
 
 //-----------------------------------------------------------------------------
