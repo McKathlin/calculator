@@ -107,10 +107,12 @@ Object.defineProperties(Calculator, {
         },
         set: function(value) {
             value = value ?? 0;
-            if (Number.isNaN(value)) {
+            if (Number.isNaN(value) || !Number.isFinite(value)) {
                 this.currentState = Calculator.state.error;
+                this.currentText = Calculator.ERROR_TEXT;
+            } else {
+                this.currentText = value.toString();
             }
-            this.currentText = value.toString();
         }
     },
     currentState: {
