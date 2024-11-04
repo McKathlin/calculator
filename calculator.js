@@ -209,6 +209,7 @@ Calculator.appendDecimalPoint = function() {
 };
 
 Calculator.setBinaryOperator = function(operatorName) {
+    this.evaluate(); // Calculate previous operation, if any
     this.operator = operatorName;
     this.previousNumber = this.currentNumber;
     this.currentNumber = null;
@@ -225,6 +226,7 @@ Calculator.evaluate = function() {
         this.currentNumber = this.currentNumber ?? this.previousNumber ?? 0;
     }
     this.previousNumber = null;
+    this.currentState = Calculator.state.normal;
 };
 
 Calculator.applySquare = function() {
