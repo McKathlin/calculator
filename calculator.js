@@ -64,11 +64,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
 //=============================================================================
 
 Calculator.updateUI = function() {
-    if (Calculator.errorState) {
-        this.resultNode.innerText = Calculator.ERROR_TEXT;
-    } else {
-        this.resultNode.innerText = this.currentText;
-    }
+    this.resultNode.innerText = this.currentText;
     
     // TODO: Enable/disable buttons as needed
 };
@@ -117,6 +113,8 @@ Object.defineProperties(Calculator, {
         get: function() {
             if (this.errorState) {
                 return this.ERROR_TEXT;
+            } else if (this.lastButtonType == Calculator.buttonType.operator) {
+                return this.previousNumber.toString();
             } else {
                 return this._currentText;
             }
@@ -137,7 +135,11 @@ Object.defineProperties(Calculator, {
             return this._operator;
         },
         set: function(value) {
-            this._operator = this.getFunctionNameForOperator(value);
+            if (value) {
+                this._operator = this.getFunctionNameForOperator(value);
+            } else {
+                this._operator = null;
+            }
         }
     }
 });
@@ -193,11 +195,17 @@ Calculator.appendDecimalPoint = function() {
 
 Calculator.setBinaryOperator = function(operatorName) {
     this.lastButtonType = Calculator.buttonType.operator;
-    // TODO
+    this.operator = operatorName;
+    this.previousNumber = this.currentNumber;
+    this.currentNumber = 0;
 };
 
 Calculator.evaluate = function() {
-    // TODO
+    if (this.operator) {
+        result = this.operate(
+            this.operator, this.previousNumber, this.currentNumber);
+        this.currentNumber = result;
+    }
 };
 
 Calculator.applySquare = function() {
@@ -213,7 +221,7 @@ Calculator.applySquareRoot = function() {
 //-----------------------------------------------------------------------------
 
 Calculator.operate = function(operator, a, b) {
-    const functionName = getFunctionNameForOperator(operator);
+    const functionName = this.getFunctionNameForOperator(operator);
     return Calculator[functionName](a, b);
 };
 
