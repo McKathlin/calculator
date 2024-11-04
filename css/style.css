@@ -73,7 +73,7 @@ body {
 }
 
 #calculator #result {
-    font-size: 2.5rem;
+    font-size: 3rem;
 }
 
 #calculator .button-row {
@@ -86,7 +86,7 @@ body {
     border: 3px solid #00002060;
     border-radius: 7px;
     margin: 1px;
-    font-size: 2.2rem;
+    font-size: 2.5rem;
     display: block;
     flex: 1;
 
@@ -130,8 +130,8 @@ body {
         border-radius: 0;
     }
 
-    #calculator #screen {
-        font-size: 2rem;
+    #calculator #result {
+        font-size: 2.1rem;
     }
 
     #calculator button {
