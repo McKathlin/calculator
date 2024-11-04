@@ -30,19 +30,19 @@ Calculator.equalsButton = document.querySelector("button#equals");
 Calculator.operatorButtons = document.querySelectorAll("button.operator");
 Calculator.digitButtons = document.querySelectorAll("button.digit");
 
-backspaceButton.addEventListener("click", (e) => {
+Calculator.backspaceButton.addEventListener("click", (e) => {
     // TODO
 });
 
-clearButton.addEventListener("click", (e) => {
+Calculator.clearButton.addEventListener("click", (e) => {
     Calculator.clear();
 });
 
-decimalPointButton.addEventListener("click", (e) => {
+Calculator.decimalPointButton.addEventListener("click", (e) => {
     // TODO
 });
 
-equalsButton.addEventListener("click", (e) => {
+Calculator.equalsButton.addEventListener("click", (e) => {
     // TODO
 });
 
