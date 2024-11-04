@@ -37,7 +37,7 @@ Calculator.decimalPointButton.addEventListener("click", (e) => {
 });
 
 Calculator.equalsButton.addEventListener("click", (e) => {
-    Calculator.evalute();
+    Calculator.evaluate();
 });
 
 for (let button of Calculator.digitButtons) {
