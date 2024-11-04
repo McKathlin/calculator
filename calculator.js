@@ -4,7 +4,13 @@
 
 const Calculator = {};
 
-Calculator.buttonType = { none: 0, digit: 1, operator: 2, unary: 3 };
+Calculator.buttonType = {
+    none: 0,
+    digit: 1,
+    operator: 2,
+    square: 3,
+    squareRoot: 4
+};
 Calculator.EMPTY_TEXT = "0";
 Calculator.ERROR_TEXT = "ERROR";
 
@@ -134,17 +140,26 @@ Calculator.setBinaryOperator = function(operatorName) {
     // TODO
 };
 
-Calculator.evalute = function() {
+Calculator.evaluate = function() {
     // TODO
 };
 
-Calculator.operate = function(funcOperate, a, b) {
-    return funcOperate(a, b);
+Calculator.applySquare = function() {
+    // TODO
+};
+
+Calculator.applySquareRoot = function() {
+    // TODO
 };
 
 //-----------------------------------------------------------------------------
 // Operations
 //-----------------------------------------------------------------------------
+
+Calculator.operate = function(funcOperate, a, b) {
+    return funcOperate(a, b);
+};
+
 
 Calculator.add = function(a, b) {
     return a + b;
