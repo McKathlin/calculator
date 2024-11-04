@@ -28,6 +28,7 @@ body {
 }
 
 #calculator {
+    color: black;
     background-color: #888;
     padding: 0.5rem 0.9rem;
     border: solid 3px #555;
@@ -56,14 +57,19 @@ body {
 #calculator .screen-row {
     flex: 1;
     margin-bottom: 1vh;
-}
-
-#calculator #screen {
+    color: black;
     background-color: #bc9;
-    font-size: 2.5rem;
     text-align: right;
     padding: 0 1rem;
     width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+#calculator #result {
+    font-size: 2.5rem;
 }
 
 #calculator .button-row {
