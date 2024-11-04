@@ -46,7 +46,11 @@ for (let button of Calculator.digitButtons) {
     });
 }
 
-// TODO: Implement operator buttons
+for (let button of Calculator.operatorButtons) {
+    button.addEventListener("click", (e) => {
+        Calculator.setBinaryOperator(e.target.id);
+    });
+}
 
 // TODO: Implement unary buttons
 
@@ -74,6 +78,7 @@ Calculator.updateUI = function() {
 //=============================================================================
 // Constants
 //-----------------------------------------------------------------------------
+
 Calculator.buttonType = {
     none: 0,
     digit: 1,
@@ -85,9 +90,9 @@ Calculator.buttonType = {
 //-----------------------------------------------------------------------------
 // Variables
 //-----------------------------------------------------------------------------
+
 Calculator.errorState = false;
 Calculator.previousNumber = null;
-Calculator.operateFunction = null;
 Calculator.lastButtonType = Calculator.buttonType.none;
 
 Calculator._currentText = "";
@@ -132,26 +137,12 @@ Object.defineProperties(Calculator, {
             return this._operator;
         },
         set: function(value) {
-            value = value.toLowerCase();
-            if (value == "+" || value == "plus" || value.startsWith("add")) {
-                this._operator = "+";
-                this.operatorFunction = Calculator.add;
-            } else if (value == '-' || value == "minus"
-            || value.startsWith("sub")) {
-                this._operator = "-";
-                this.operatorFunction = Calculator.subtract;
-            } else if (value == "*" || value == "x" || value == "times"
-            || value.startsWith("mult")) {
-                this._operator = "*";
-                this.operatorFunction = Calculator.multiply;
-            } else if (value == "/" || value.startsWith("div")) {
-                this._operator = "/";
-                this.operatorFunction = Calculator.divide;
-            }
+            this._operator = this.getFunctionNameForOperator(value);
         }
     }
 });
 
+//-----------------------------------------------------------------------------
 // Button functions
 //-----------------------------------------------------------------------------
 
@@ -221,10 +212,10 @@ Calculator.applySquareRoot = function() {
 // Operations
 //-----------------------------------------------------------------------------
 
-Calculator.operate = function(funcOperate, a, b) {
-    return funcOperate(a, b);
+Calculator.operate = function(operator, a, b) {
+    const functionName = getFunctionNameForOperator(operator);
+    return Calculator[functionName](a, b);
 };
-
 
 Calculator.add = function(a, b) {
     return a + b;
@@ -250,3 +241,20 @@ Calculator.square = function(num) {
     return num * num;
 };
 
+//-----------------------------------------------------------------------------
+// Helper functions
+//-----------------------------------------------------------------------------
+
+Calculator.getFunctionNameForOperator = function(op) {
+    op = op.toLowerCase();
+    if (op == "+" || op == "plus" || op.startsWith("add")) {
+        return "add";
+    } else if (op == '-' || op == "minus" || op.startsWith("sub")) {
+        return "subtract";
+    } else if (op == "*" || op == "x" || op == "times" || op.startsWith("mult")) {
+        return "multiply";
+    } else if (op == "/" || op.startsWith("div")) {
+        return "divide";
+    }
+    throw new Error(`Unrecognized operator: ${op}`);
+};
