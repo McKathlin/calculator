@@ -43,7 +43,7 @@ Calculator.decimalPointButton.addEventListener("click", (e) => {
 });
 
 Calculator.equalsButton.addEventListener("click", (e) => {
-    // TODO
+    Calculator.evalute();
 });
 
 for (let button of Calculator.digitButtons) {
@@ -78,14 +78,21 @@ Calculator.updateUI = function() {
 //=============================================================================
 // Calculator Logic
 //=============================================================================
+// Button functions
+//-----------------------------------------------------------------------------
 
 Calculator.backspace = function() {
     if (Calculator.errorState) {
         // Don't change error state.
     } else if (Calculator.currentText == Calculator.EMPTY_TEXT) {
         // Already empty. Do nothing.
+    } else if (Calculator.lastButtonType == Calculator.buttonType.operator) {
+        // Undo operator selection.
+        Calculator.operateFunction = null;
+        Calculator.lastButtonType = Calculator.buttonType.none;
     } else {
         // Remove the last character.
+        Calculator.lastButtonType = Calculator.buttonType.none;
         Calculator.currentText = Calculator.currentText.slice(0, -1);
         if (Calculator.currentText == "") {
             Calculator.currentText = Calculator.EMPTY_TEXT;
@@ -95,6 +102,7 @@ Calculator.backspace = function() {
 };
 
 Calculator.clear = function() {
+    Calculator.lastButtonType = Calculator.buttonType.none;
     Calculator.previousOperand = null;
     Calculator.operateFunction = null;
     Calculator.currentText = Calculator.EMPTY_TEXT;
@@ -103,6 +111,7 @@ Calculator.clear = function() {
 };
 
 Calculator.appendDigit = function(digit) {
+    Calculator.lastButtonType = Calculator.buttonType.digit;
     if (Calculator.currentText == Calculator.EMPTY_TEXT) {
         Calculator.currentText = "";
     }
@@ -111,6 +120,7 @@ Calculator.appendDigit = function(digit) {
 };
 
 Calculator.appendDecimalPoint = function() {
+    Calculator.lastButtonType = Calculator.buttonType.digit;
     if (Calculator.currentText.includes(".")) {
         Calculator.errorState = true;
     } else {
@@ -120,6 +130,11 @@ Calculator.appendDecimalPoint = function() {
 };
 
 Calculator.setBinaryOperator = function(operatorName) {
+    Calculator.lastButtonType = Calculator.buttonType.operator;
+    // TODO
+};
+
+Calculator.evalute = function() {
     // TODO
 };
 
@@ -127,7 +142,9 @@ Calculator.operate = function(funcOperate, a, b) {
     return funcOperate(a, b);
 };
 
-// Binary operations
+//-----------------------------------------------------------------------------
+// Operations
+//-----------------------------------------------------------------------------
 
 Calculator.add = function(a, b) {
     return a + b;
@@ -145,8 +162,6 @@ Calculator.divide = function(a, b) {
     return a / b;
 };
 
-// Unary operations
-
 Calculator.squareRoot = function(num) {
     return Math.sqrt(num);
 }
@@ -156,7 +171,7 @@ Calculator.square = function(num) {
 };
 
 //-----------------------------------------------------------------------------
-// Helper methods
+// Helper functions
 //-----------------------------------------------------------------------------
 
 Calculator._getCurrentNumber = function() {
