@@ -25,7 +25,15 @@ Calculator.operatorButtons = document.querySelectorAll("button.operator");
 Calculator.digitButtons = document.querySelectorAll("button.digit");
 
 //-----------------------------------------------------------------------------
-// Event Listeners
+// Initialization
+//-----------------------------------------------------------------------------
+
+document.addEventListener("DOMContentLoaded", (e) => {
+    Calculator.clear();
+});
+
+//-----------------------------------------------------------------------------
+// Click events
 //-----------------------------------------------------------------------------
 
 Calculator.backspaceButton.addEventListener("click", (e) => {
@@ -65,12 +73,10 @@ document.querySelector("button#square").addEventListener("click", (e) => {
 });
 
 //-----------------------------------------------------------------------------
-// Initialization
+// Keyboard
 //-----------------------------------------------------------------------------
 
-document.addEventListener("DOMContentLoaded", (e) => {
-    Calculator.clear();
-});
+
 
 //=============================================================================
 // UI Update
