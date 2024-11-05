@@ -54,7 +54,8 @@ Calculator.equalsButton.addEventListener("click", (e) => {
 
 for (let button of Calculator.digitButtons) {
     button.addEventListener("click", (e) => {
-        Calculator.appendDigit(e.target.id);
+        const digit = e.target.innerText;
+        Calculator.appendDigit(digit);
     });
 }
 
@@ -76,7 +77,58 @@ document.querySelector("button#square").addEventListener("click", (e) => {
 // Keyboard
 //-----------------------------------------------------------------------------
 
+document.addEventListener("keydown", (e) => {
+    console.log(e.key);
+    const targetButton = Calculator.getButtonForKeyEvent(e);
+    if (targetButton) {
+        targetButton.classList.add("pressed");
+    }
+});
 
+document.addEventListener("keyup", (e) => {
+    const targetButton = Calculator.getButtonForKeyEvent(e);
+    if (targetButton) {
+        targetButton.dispatchEvent(new Event("click"));
+        targetButton.classList.remove("pressed");
+    }
+});
+
+Calculator.getButtonForKeyEvent = function(event) {
+    const key = event.key.toLowerCase();
+    if (/^[0-9]$/.test(key)) {
+        return document.querySelector(`#num-${key}`);
+    }
+    
+    switch(key) {
+        case "=":
+        case "enter":
+            return Calculator.equalsButton;
+        case "c":
+        case "home":
+            return Calculator.clearButton;
+        case "+":
+            return document.querySelector("#plus");
+        case "-":
+            return document.querySelector("#minus");
+        case "x":
+        case "*":
+            return document.querySelector("#times");
+        case "/":
+            return document.querySelector("#divide");
+        case ".":
+            return Calculator.decimalPointButton;
+        case "backspace":
+        case "delete":
+            return Calculator.backspaceButton;
+        case "pageup":
+            return document.querySelector("#square");
+        case "pagedown":
+            return document.querySelector("#square-root");
+    }
+
+    // No matching button found.
+    return null;
+};
 
 //=============================================================================
 // UI Update
@@ -397,6 +449,7 @@ Calculator.getFunctionNameForOperator = function(op) {
         return "multiply";
     } else if (op == "/" || op.startsWith("div")) {
         return "divide";
+    } else {
+        return null; // No matching function found
     }
-    throw new Error(`Unrecognized operator: ${op}`);
 };

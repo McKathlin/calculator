@@ -120,7 +120,7 @@ body {
     padding-bottom: 2px;
 }
 
-#calculator button:active {
+#calculator button:active, #calculator button.pressed {
     /* invert button shadow */
     box-shadow: inset 2px 3px var(--weak-shadow);
 
