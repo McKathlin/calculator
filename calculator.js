@@ -92,6 +92,7 @@ Calculator.updateUI = function() {
 Calculator.EMPTY_TEXT = "0";
 Calculator.ERROR_TEXT = "ERROR";
 Calculator.OVERFLOW_TEXT = "OVERFLOW";
+Calculator.CONFUSED_TEXT = "WHAT";
 Calculator.INFINITY_TEXT = "NOPE";
 Calculator.MAX_OUTPUT_LENGTH = 12;
 Calculator.ELLIPSIS = "\u{2026}";
@@ -222,7 +223,7 @@ Calculator.backspace = function() {
 };
 
 Calculator.clear = function() {
-    this._currentState = Calculator.state.normal;
+    this._currentState = Calculator.state.postOp;
     this.previousNumber = null;
     this.operateFunction = null;
     this.currentText = Calculator.EMPTY_TEXT;
@@ -244,26 +245,59 @@ Calculator.appendDigit = function(digit) {
 
 Calculator.appendDecimalPoint = function() {
     if (this.currentState == Calculator.state.error) {
-        return; // Can't append during an error
-    }
-    this.currentState = Calculator.state.normal;
-    if (this.currentText.includes(".")) {
+        // Can't append during an error
+    } else if (this.currentText.includes(".")) {
         this.currentState = Calculator.state.error;
         this.currentText = Calculator.ERROR_TEXT;
     } else {
+        this.currentState = Calculator.state.normal;
         this.currentText += ".";
     }
 };
 
+Calculator.appendNegativeSign = function() {
+    this.currentState = Calculator.state.normal;
+    if (!this.currentText || this.currentText == Calculator.EMPTY_TEXT) {
+        // Start a negative number.
+        this.currentText = "-";
+    } else if (this.currentText.startsWith("-")) {
+        // Take away the negative sign to invert the negative.
+        this.currentText = this.currentText.slice(1);
+    } else {
+        // Make it negative.
+        this.currentText = "-" + this.currentText;
+    }
+}
+
 Calculator.setBinaryOperator = function(operatorName) {
     if (this.currentState == Calculator.state.error) {
-        return; // Can't operate during an error
+        // Can't operate during an error
+        return;
+    } else if (this.currentState == Calculator.state.postOp) {
+        // Setting an operator right after an operator is unusual.
+        // Check what it means.
+        operatorName = Calculator.getFunctionNameForOperator(operatorName);
+        if (operatorName == "subtract") {
+            Calculator.appendNegativeSign();
+        } else if (operatorName == "add") {
+            // This affirms that the number to follow is positive,
+            // but that's already the default.
+            // Do nothing.
+        } else {
+            // A multiply or divide after another operator makes no sense.
+            this.currentState = Calculator.state.error;
+            this.currentText = Calculator.CONFUSED_TEXT;
+        }
+        return;
+    } else {
+        // Set the operator normally.
+        this.evaluate(); // Calculate previous operation, if any
+        this.operator = operatorName;
+        this.previousNumber = this.currentNumber;
+        this.currentNumber = null;
+        this.currentState = Calculator.state.postOp;
+        return;
     }
-    this.evaluate(); // Calculate previous operation, if any
-    this.operator = operatorName;
-    this.previousNumber = this.currentNumber;
-    this.currentNumber = null;
-    this.currentState = Calculator.state.postOp;
 };
 
 Calculator.evaluate = function() {
