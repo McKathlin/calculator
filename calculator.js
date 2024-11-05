@@ -84,6 +84,12 @@ document.addEventListener("keydown", (e) => {
     }
 });
 
+document.addEventListener("keypress", (e) => {
+    if (e.key == "Enter") {
+        e.preventDefault(); // Avoid clicking focused buttons.
+    }
+}) 
+
 document.addEventListener("keyup", (e) => {
     const targetButton = Calculator.getButtonForKeyEvent(e);
     if (targetButton) {
