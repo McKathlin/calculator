@@ -78,7 +78,6 @@ document.querySelector("button#square").addEventListener("click", (e) => {
 //-----------------------------------------------------------------------------
 
 document.addEventListener("keydown", (e) => {
-    console.log(e.key);
     const targetButton = Calculator.getButtonForKeyEvent(e);
     if (targetButton) {
         targetButton.classList.add("pressed");
@@ -380,6 +379,7 @@ Calculator.evaluate = function() {
     if (this.currentState == Calculator.state.error) {
         return; // Can't evaluate during an error
     }
+
     if (this.previousNumber !== null && this.currentNumber !== null
     && this.operator !== null) {
         result = this.operate(
