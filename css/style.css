@@ -163,7 +163,8 @@ body {
     border-radius: 0.8rem;
 }
 
-/* Small screens and small-to-medium touch screens have edge-less display */
+/* Small screens and small-to-medium touch screens are edge-less
+   and need extra room on the bottom where display is covered. */
 @media ((pointer: coarse) and ((max-width: 600px) or (max-height: 750px)))
 or ((max-width: 400px) or (max-height: 500px)) {
     body {
@@ -180,7 +181,14 @@ or ((max-width: 400px) or (max-height: 500px)) {
     }
 
     #calculator .footer-row {
-        margin: 3px auto 3px auto;
+        min-height: 2.6rem;
+        max-height: unset;
+        margin: 0.5em auto 0.5em auto;
+    }
+
+    #calculator .footer-row p {
+        font-size: 1.5em;
+        margin: 0.7rem;
     }
 }
 
@@ -205,7 +213,7 @@ or ((max-width: 400px) or (max-height: 500px)) {
 }
 
 /* Sideways phone and other short screens */
-@media (max-height: 500px) or (max-width: 300px) {
+@media (max-height: 500px) {
     #calculator .footer-row {
         display: none;
     }
