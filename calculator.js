@@ -159,8 +159,7 @@ Calculator.state = {
     error: -1,
     normal: 0,
     postOp: 1,
-    postSquare: 2,
-    postSquareRoot: 3
+    postEval: 2,
 };
 
 //-----------------------------------------------------------------------------
@@ -293,7 +292,7 @@ Calculator.backspace = function() {
 };
 
 Calculator.clear = function() {
-    this._currentState = Calculator.state.postOp;
+    this._currentState = Calculator.state.postEval;
     this.previousNumber = null;
     this.operateFunction = null;
     this.currentText = Calculator.EMPTY_TEXT;
@@ -302,7 +301,8 @@ Calculator.clear = function() {
 Calculator.appendDigit = function(digit) {
     if (this.currentState == Calculator.state.error) {
         this.clear(); // Start fresh
-    } else if (this.currentState == Calculator.state.postOp) {
+    } else if (this.currentState == Calculator.state.postOp
+    || this.currentState == Calculator.state.postEval) {
         this.currentText = null; // Prepare to take a new number
     }
     this.currentState = Calculator.state.normal;
@@ -343,10 +343,13 @@ Calculator.setBinaryOperator = function(operatorName) {
     if (this.currentState == Calculator.state.error) {
         // Can't operate during an error
         return;
-    } else if (this.currentState == Calculator.state.postOp) {
+    }
+    
+    // Standardize the operator name for checks.
+    operatorName = Calculator.getFunctionNameForOperator(operatorName);
+    if (this.currentState == Calculator.state.postOp) {
         // Setting an operator right after an operator is unusual.
         // Check what it means.
-        operatorName = Calculator.getFunctionNameForOperator(operatorName);
         if (operatorName == "subtract") {
             Calculator.appendNegativeSign();
         } else if (operatorName == "add") {
@@ -359,15 +362,18 @@ Calculator.setBinaryOperator = function(operatorName) {
             this.currentText = Calculator.CONFUSED_TEXT;
         }
         return;
-    } else {
-        // Set the operator normally.
-        this.evaluate(); // Calculate previous operation, if any
-        this.operator = operatorName;
-        this.previousNumber = this.currentNumber;
-        this.currentNumber = null;
-        this.currentState = Calculator.state.postOp;
-        return;
+    } else if (this.currentText == 0 || this.currentText == Calculator.EMPTY_TEXT
+    && operatorName == "subtract") {
+        Calculator.appendNegativeSign();
     }
+
+    // Set the operator normally.
+    this.evaluate(); // Calculate previous operation, if any
+    this.operator = operatorName;
+    this.previousNumber = this.currentNumber;
+    this.currentNumber = null;
+    this.currentState = Calculator.state.postOp;
+    return;
 };
 
 Calculator.evaluate = function() {
@@ -383,7 +389,7 @@ Calculator.evaluate = function() {
         this.currentNumber = this.currentNumber ?? this.previousNumber ?? 0;
     }
     this.previousNumber = null;
-    this.currentState = Calculator.state.postOp;
+    this.currentState = Calculator.state.postEval;
 };
 
 Calculator.applySquareRoot = function() {
@@ -391,7 +397,7 @@ Calculator.applySquareRoot = function() {
         return; // Can't append during an error
     }
     this.currentNumber = this.squareRoot(this.currentNumber);
-    this.currentState = Calculator.state.postSquareRoot;
+    this.currentState = Calculator.state.normal;
 };
 
 Calculator.applySquare = function() {
@@ -399,7 +405,7 @@ Calculator.applySquare = function() {
         return; // Can't append during an error
     }
     this.currentNumber = this.square(this.currentNumber);
-    this.currentState = Calculator.state.postSquare;
+    this.currentState = Calculator.state.normal;
 };
 
 //-----------------------------------------------------------------------------
