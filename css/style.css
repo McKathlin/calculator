@@ -214,10 +214,6 @@ or ((max-width: 400px) or (max-height: 500px)) {
 
 /* Sideways phone and other short screens */
 @media (max-height: 500px) {
-    #calculator .footer-row {
-        display: none;
-    }
-
     #calculator button {
         font-size: 1.8rem;
     }
