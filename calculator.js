@@ -121,7 +121,11 @@ Calculator._currentState = Calculator.state.normal;
 Object.defineProperties(Calculator, {
     currentNumber: {
         get: function() {
-            return Number.parseFloat(this.currentText);
+            if (this.currentText == null) {
+                return null;
+            } else {
+                return Number.parseFloat(this.currentText);
+            }
         },
         set: function(value) {
             if (null == value) {
@@ -130,9 +134,17 @@ Object.defineProperties(Calculator, {
                 this.currentState = Calculator.state.error;
                 this.currentText = Calculator.ERROR_TEXT;
             } else if (!Number.isFinite(value)) {
+                this.currentState = Calculator.state.error;
                 this.currentText = Calculator.INFINITY_TEXT;
             } else {
-                this.currentText = value.toString();
+                let text = value.toString();
+                if (text.toLowerCase().includes("e")) {
+                    // This calculator does not support E notation.
+                    this.currentState = Calculator.state.error;
+                    this.currentText = Calculator.ERROR_TEXT;
+                } else {
+                    this.currentText = text;
+                }
             }
         }
     },
