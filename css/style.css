@@ -16,7 +16,7 @@
 
 body {
     color: black;
-    background-color: #eee;
+    background-color: #d8d0e8;
 
     /* Sizing */
     width: 100vw;
@@ -33,7 +33,7 @@ body {
 @media (prefers-color-scheme: dark) {
     body {
         color: white;
-        background-color: black;
+        background-color: #302820;
     }
 }
 
@@ -42,7 +42,7 @@ body {
     background-color: #889;
     padding: 0.7rem 0.8rem;
     border: solid 3px #556;
-    box-shadow: 3px 6px #445;
+    box-shadow: 3px 6px #445, 5px 5px 20px 20px var(--weak-shadow);
     border-radius: 15px;
 
     /* Size */
@@ -71,6 +71,7 @@ body {
     text-shadow: 1px 3px #00002030;
     background-color: #bca;
     border: solid 3px #556;
+    border-radius: 3px;
     box-shadow: inset 3px 6px var(--weak-shadow);
 
     /* Sizing and Layout */
