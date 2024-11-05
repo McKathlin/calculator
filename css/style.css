@@ -163,25 +163,54 @@ body {
     border-radius: 0.8rem;
 }
 
-/* Extra Small screens */
-@media (max-width: 400px) or (max-height: 500px) {
+/* Small screens and small-to-medium touch screens have edge-less display */
+@media ((pointer: coarse) and ((max-width: 600px) or (max-height: 750px)))
+or ((max-width: 400px) or (max-height: 500px)) {
+    body {
+        background-color: #889;
+    }
+
     #calculator {
         width: 100%;
         height: 100%;
-        padding: 0;
+        padding: 0.6rem;
+        border: none;
         border-radius: 0;
         box-shadow: none;
     }
 
+    #calculator .footer-row {
+        margin: 3px auto 3px auto;
+    }
+}
+
+/* Increase max dimensions in all except the smallest touch screens. */
+@media (pointer: coarse) and (min-width: 300px) and (min-height: 500px) {
+    /* This affects font size and max calculator size */
+    :root {
+        font-size: 120%;
+    }
+}
+
+/* Narrow screens need smaller result font to fit digits. */
+@media (max-width: 400px) {
+    #calculator .screen-row {
+        padding: 0 0.7rem;
+        max-height: 4rem;
+    }
+
     #calculator #result {
-        font-size: 2.5rem;
+        font-size: 2.9rem;
+    }
+}
+
+/* Sideways phone and other short screens */
+@media (max-height: 500px) or (max-width: 300px) {
+    #calculator .footer-row {
+        display: none;
     }
 
     #calculator button {
         font-size: 1.8rem;
-    }
-
-    #calculator .footer-row {
-        margin: 3px auto 3px auto;
     }
 }
