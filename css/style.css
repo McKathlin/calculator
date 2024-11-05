@@ -69,17 +69,22 @@ body {
     font-family: Digital-7, monospace;
     color: black;
     text-shadow: 1px 3px #00002030;
-    background-color: #bca;
+    background: linear-gradient(
+        140deg,
+        #cdc 10%, 
+        #bca 40%
+    );
     border: solid 3px #556;
     border-radius: 3px;
-    box-shadow: inset 3px 6px var(--weak-shadow);
+    box-shadow: inset 2px 2px 0 3px var(--weak-shadow),
+        inset 2px 2px 0 3px #bca;
 
     /* Sizing and Layout */
     flex: 1;
     text-align: right;
-    margin-bottom: 1vh;
+    margin: 0 auto 1vh auto;
     padding: 0 1rem;
-    width: 100%;
+    width: 99%;
     max-height: 5rem;
 
     /* Content arrangement */
