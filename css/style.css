@@ -90,9 +90,9 @@ body {
     flex: 1;
     text-align: right;
     margin: 0 auto 1vh auto;
-    padding: 0 0.3rem;
+    padding: 0 0.3rem 4px 0.3rem;
     width: 99%;
-    max-height: calc(var(--calculator-width) * 0.16);
+    max-height: calc((var(--calculator-width) * 0.16) + 8px);
 
     /* Content arrangement */
     display: flex;
@@ -179,7 +179,7 @@ or ((max-width: 400px) or (max-height: 500px)) {
         font-size: clamp(12px, 8px + 5vh, 45px);
 
         --calculator-width: 100vmin;
-        --calculator-height: clamp(100px, 100vh, 180vw);
+        --calculator-height: clamp(100px, 100vh, 160vw);
     }
 
     body {
@@ -187,20 +187,18 @@ or ((max-width: 400px) or (max-height: 500px)) {
     }
 
     #calculator {
-        padding: 0.5rem;
+        padding: 0.4rem;
         border: none;
         border-radius: 0;
         box-shadow: none;
     }
 
     #calculator .footer-row {
-        min-height: 2.6rem;
-        max-height: unset;
         margin: 0.1rem auto 0.1rem auto;
     }
 
     #calculator .footer-row p {
-        margin: 0.2rem;
+        margin: 0.15rem;
     }
 }
 
