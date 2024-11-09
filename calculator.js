@@ -225,7 +225,7 @@ Object.defineProperties(Calculator, {
             if (value == this._currentText) {
                 return; // No change.
             } else if (value === null) {
-                // This will make the display fall through to previous text
+                // This will make the display fall through to previous text.
                 this._currentText = null;
             } else if (value === "") {
                 this._currentText = this.EMPTY_TEXT;
@@ -302,12 +302,17 @@ Calculator.clear = function() {
 };
 
 Calculator.appendDigit = function(digit) {
+    if (this.isFull()) {
+        return; // Ignore the incoming digit.
+    }
+
     if (this.currentState == Calculator.state.error) {
         this.clear(); // Start fresh
     } else if (this.currentState == Calculator.state.postOp
     || this.currentState == Calculator.state.postEval) {
         this.currentText = null; // Prepare to take a new number
     }
+
     // Append the digit.
     if (!Calculator.currentText || Calculator.currentText == Calculator.EMPTY_TEXT) {
         this.currentText = digit;
@@ -318,14 +323,21 @@ Calculator.appendDigit = function(digit) {
 };
 
 Calculator.appendDecimalPoint = function() {
-    if (this.currentText.includes(".")) {
+    if (this.currentState == Calculator.state.error) {
+        this.clear();
+    }
+
+    if (this.currentText == "-") {
+        this.currentText = "-0.";
+    } else if (this.isEmpty()) {
+        this.currentText = "0.";
+    } else if (this.isFull()) {
+        return; // Ignore the request to append.
+    } else if (this.currentText.includes(".")) {
+        // Can't have more than one decimal point.
         this.currentState = Calculator.state.error;
         this.currentText = Calculator.ERROR_TEXT;
         return;
-    }
-
-    if (Calculator.isEmpty()) {
-        this.currentText = "0.";
     } else {
         this.currentText += ".";
     }
@@ -333,12 +345,14 @@ Calculator.appendDecimalPoint = function() {
 };
 
 Calculator.appendNegativeSign = function() {
-    if (Calculator.isEmpty()) {
+    if (this.isEmpty()) {
         // Start a negative number.
         this.currentText = "-";
     } else if (this.currentText.startsWith("-")) {
         // Take away the negative sign to invert the negative.
         this.currentText = this.currentText.slice(1);
+    } else if (this.isFull()) {
+        // Ignore.
     } else {
         // Make it negative.
         this.currentText = "-" + this.currentText;
@@ -451,6 +465,12 @@ Calculator.square = function(num) {
 Calculator.isEmpty = function() {
     return this.currentText == Calculator.EMPTY_TEXT
     || !this.currentText || !this.currentNumber;
+};
+
+Calculator.isFull = function() {
+    return this.currentText
+        && this.currentState != Calculator.state.error
+        && this.currentText.length >= this.MAX_OUTPUT_LENGTH;
 };
 
 Calculator.setError = function(errorMessage = "ERROR") {
