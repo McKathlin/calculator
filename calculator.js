@@ -285,7 +285,8 @@ Calculator.backspace = function() {
         this.currentText = Calculator.currentText.slice(0, -1);
         if (this.currentText == "") {
             this.currentText = Calculator.EMPTY_TEXT;
-            this.currentState = Calculator.state.clear;
+            this.currentState = this.previousNumber ?
+                Calculator.state.postOp : Calculator.state.clear;
         } else {
             this.currentState = Calculator.state.digitEntry;
         }
