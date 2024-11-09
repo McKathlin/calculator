@@ -209,6 +209,7 @@ Object.defineProperties(Calculator, {
         },
         set: function(value) {
             if (this._currentState !== value) {
+                console.log("state set to", value);
                 this._currentState = value;
             }
         }
@@ -268,6 +269,7 @@ Object.defineProperties(Calculator, {
 //-----------------------------------------------------------------------------
 
 Calculator.backspace = function() {
+    console.log(this.currentState);
     if (this.currentState == Calculator.state.error) {
         // Clear error.
         this.clear();
@@ -386,7 +388,9 @@ Calculator.setBinaryOperator = function(operatorName) {
     this.operator = operatorName;
     this.previousNumber = this.currentNumber;
     this.currentNumber = null;
-    this.currentState = Calculator.state.postOp;
+    if (!this.currentState == Calculator.state.error) {
+        this.currentState = Calculator.state.postOp;
+    }
     return;
 };
 
@@ -404,7 +408,10 @@ Calculator.evaluate = function() {
         this.currentNumber = this.currentNumber ?? this.previousNumber ?? 0;
     }
     this.previousNumber = null;
-    this.currentState = Calculator.state.postEval;
+
+    if (this.currentState != Calculator.state.error) {
+        this.currentState = Calculator.state.postEval;
+    }
 };
 
 Calculator.applySquareRoot = function() {
@@ -472,7 +479,7 @@ Calculator.isFull = function() {
 };
 
 Calculator.setError = function(errorMessage = "ERROR") {
-    this.currentState == Calculator.state.error;
+    this.currentState = Calculator.state.error;
     this.currentText = errorMessage;
 };
 
