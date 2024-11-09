@@ -153,7 +153,6 @@ Calculator.updateUI = function() {
 //-----------------------------------------------------------------------------
 
 Calculator.EMPTY_TEXT = "0";
-Calculator.ERROR_TEXT = "ERROR";
 Calculator.OVERFLOW_TEXT = "OVERFLOW";
 Calculator.CONFUSED_TEXT = "WHAT";
 Calculator.INFINITY_TEXT = "NOPE";
@@ -162,9 +161,10 @@ Calculator.ELLIPSIS = "\u{2026}";
 
 Calculator.state = {
     error: -1,
-    normal: 0,
-    postOp: 1,
-    postEval: 2,
+    clear: 0,
+    digitEntry: 1,
+    postOp: 2,
+    postEval: 3,
 };
 
 //-----------------------------------------------------------------------------
@@ -174,7 +174,7 @@ Calculator.state = {
 Calculator.previousNumber = null;
 
 Calculator._currentText = "";
-Calculator._currentState = Calculator.state.normal;
+Calculator._currentState = Calculator.state.clear;
 
 //-----------------------------------------------------------------------------
 // Properties
@@ -193,17 +193,14 @@ Object.defineProperties(Calculator, {
             if (null == value) {
                 this.currentText = null;
             } else if (Number.isNaN(value)) {
-                this.currentState = Calculator.state.error;
-                this.currentText = Calculator.ERROR_TEXT;
+                this.setError("ERROR");
             } else if (!Number.isFinite(value)) {
-                this.currentState = Calculator.state.error;
-                this.currentText = Calculator.INFINITY_TEXT;
+                this.setError("NOPE");
             } else {
                 let text = value.toString();
                 if (text.toLowerCase().includes("e")) {
                     // This calculator does not support E notation.
-                    this.currentState = Calculator.state.error;
-                    this.currentText = Calculator.ERROR_TEXT;
+                    this.setError("ERROR");
                 } else {
                     this.currentText = text;
                 }
@@ -215,9 +212,7 @@ Object.defineProperties(Calculator, {
             return this._currentState;
         },
         set: function(value) {
-            if (this._currentState == Calculator.state.error) {
-                // Can't leave an error state using this setter.
-            } else if (this._currentState !== value) {
+            if (this._currentState !== value) {
                 this._currentState = value;
             }
         }
@@ -241,8 +236,7 @@ Object.defineProperties(Calculator, {
                     preDecimalLength = value.length;
                 }
                 if (preDecimalLength >= ellipsisBufferLength) {
-                    this.currentState = Calculator.state.error;
-                    this._currentText = Calculator.OVERFLOW_TEXT;
+                    this.setError("OVERFLOW");
                 } else {
                     this._currentText = value.slice(
                         0, this.MAX_OUTPUT_LENGTH - 1) + this.ELLIPSIS;
@@ -279,28 +273,32 @@ Object.defineProperties(Calculator, {
 
 Calculator.backspace = function() {
     if (this.currentState == Calculator.state.error) {
-        // Don't change error state.
-    } else if (this.currentText == Calculator.EMPTY_TEXT) {
-        // Already empty. Do nothing.
+        // Clear error.
+        this.clear();
+    } else if (!this.currentText) {
+        // Already empty. Don't backspace; just make sure it's marked clear.
+        this.clear();
     } else if (this.currentState == Calculator.state.postOp) {
         // Undo operator selection.
         this.operateFunction = null;
-        this.currentState = Calculator.state.normal;
+        this.currentState = Calculator.state.digitEntry;
     } else {
         // Remove the last character.
-        Calculator.currentState = Calculator.state.normal;
         this.currentText = Calculator.currentText.slice(0, -1);
         if (this.currentText == "") {
             this.currentText = Calculator.EMPTY_TEXT;
+            this.currentState = Calculator.state.clear;
+        } else {
+            this.currentState = Calculator.state.digitEntry;
         }
     }
 };
 
 Calculator.clear = function() {
-    this._currentState = Calculator.state.postEval;
     this.previousNumber = null;
+    this.currentNumber = 0;
     this.operateFunction = null;
-    this.currentText = Calculator.EMPTY_TEXT;
+    this._currentState = Calculator.state.clear;
 };
 
 Calculator.appendDigit = function(digit) {
@@ -310,29 +308,32 @@ Calculator.appendDigit = function(digit) {
     || this.currentState == Calculator.state.postEval) {
         this.currentText = null; // Prepare to take a new number
     }
-    this.currentState = Calculator.state.normal;
+    // Append the digit.
     if (!this.currentText || this.currentText == Calculator.EMPTY_TEXT) {
         this.currentText = digit;
     } else {
         this.currentText += digit;
     }
+    this.currentState = Calculator.state.digitEntry;
 };
 
 Calculator.appendDecimalPoint = function() {
-    if (this.currentState == Calculator.state.error) {
-        // Can't append during an error
-    } else if (this.currentText.includes(".")) {
+    if (this.currentText.includes(".")) {
         this.currentState = Calculator.state.error;
         this.currentText = Calculator.ERROR_TEXT;
+        return;
+    }
+
+    if (Calculator.isClearText()) {
+        this.currentText = "0.";
     } else {
-        this.currentState = Calculator.state.normal;
         this.currentText += ".";
     }
+    this.currentState = Calculator.state.digitEntry;
 };
 
 Calculator.appendNegativeSign = function() {
-    this.currentState = Calculator.state.normal;
-    if (!this.currentText || this.currentText == Calculator.EMPTY_TEXT) {
+    if (Calculator.isEmpty()) {
         // Start a negative number.
         this.currentText = "-";
     } else if (this.currentText.startsWith("-")) {
@@ -342,34 +343,30 @@ Calculator.appendNegativeSign = function() {
         // Make it negative.
         this.currentText = "-" + this.currentText;
     }
-}
+    this.currentState = Calculator.state.digitEntry;
+};
 
 Calculator.setBinaryOperator = function(operatorName) {
-    if (this.currentState == Calculator.state.error) {
-        // Can't operate during an error
-        return;
-    }
-    
     // Standardize the operator name for checks.
     operatorName = Calculator.getFunctionNameForOperator(operatorName);
-    if (this.currentState == Calculator.state.postOp) {
-        // Setting an operator right after an operator is unusual.
-        // Check what it means.
-        if (operatorName == "subtract") {
+
+    // Check if this could work as a negative sign
+    if (operatorName == "subtract") {
+        if (Calculator.isEmpty()) {
             Calculator.appendNegativeSign();
-        } else if (operatorName == "add") {
-            // This affirms that the number to follow is positive,
-            // but that's already the default.
-            // Do nothing.
-        } else {
-            // A multiply or divide after another operator makes no sense.
-            this.currentState = Calculator.state.error;
-            this.currentText = Calculator.CONFUSED_TEXT;
+            return;
         }
+    }
+
+    if (this.currentState == Calculator.state.error) {
+        // Can't set an operator during an error.
         return;
-    } else if (this.currentText == 0 || this.currentText == Calculator.EMPTY_TEXT
-    && operatorName == "subtract") {
-        Calculator.appendNegativeSign();
+    }
+
+    if (this.currentState == Calculator.state.postOp) {
+        // Just change the active operator.
+        this.operator = operatorName;
+        return;
     }
 
     // Set the operator normally.
@@ -400,18 +397,18 @@ Calculator.evaluate = function() {
 
 Calculator.applySquareRoot = function() {
     if (this.currentState == Calculator.state.error) {
-        return; // Can't append during an error
+        return; // Can't operate during an error
     }
     this.currentNumber = this.squareRoot(this.currentNumber);
-    this.currentState = Calculator.state.normal;
+    this.currentState = Calculator.state.postEval;
 };
 
 Calculator.applySquare = function() {
     if (this.currentState == Calculator.state.error) {
-        return; // Can't append during an error
+        return; // Can't operate during an error
     }
     this.currentNumber = this.square(this.currentNumber);
-    this.currentState = Calculator.state.normal;
+    this.currentState = Calculator.state.postEval;
 };
 
 //-----------------------------------------------------------------------------
@@ -450,6 +447,17 @@ Calculator.square = function(num) {
 //-----------------------------------------------------------------------------
 // Helper functions
 //-----------------------------------------------------------------------------
+
+Calculator.isEmpty = function() {
+    return this.currentText == Calculator.EMPTY_TEXT
+    || !this.currentText || !this.currentNumber;
+};
+
+Calculator.setError = function(errorMessage = "ERROR") {
+    this._currentNumber = null;
+    this.currentState == Calculator.state.error;
+    this.currentText = errorMessage;
+};
 
 Calculator.getFunctionNameForOperator = function(op) {
     op = op.toLowerCase();
