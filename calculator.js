@@ -142,8 +142,6 @@ Calculator.getButtonForKeyEvent = function(event) {
 Calculator.updateUI = function() {
     this.resultNode.innerText =
         this.currentText ?? this.previousText ?? this.EMPTY_TEXT;
-    
-    // TODO: Enable/disable buttons as needed
 };
 
 //=============================================================================
@@ -322,23 +320,26 @@ Calculator.appendDigit = function(digit) {
 };
 
 Calculator.appendDecimalPoint = function() {
+    // Clear error before moving forward.
     if (this.currentState == Calculator.state.error) {
         this.clear();
     }
 
-    if (this.isEmpty() && currentText && !currentText.startsWith("-")) {
+    // Onward!
+    if (!this.currentText) {
         this.currentText = "0.";
+        this.currentState = Calculator.state.digitEntry;
     } else if (this.isFull()) {
-        return; // Ignore the request to append.
+        // Ignore the request to append.
     } else if (this.currentText.includes(".")) {
         // Can't have more than one decimal point.
-        this.currentState = Calculator.state.error;
-        this.currentText = Calculator.ERROR_TEXT;
-        return;
+        this.setError("STOP");
+    } else if (this.currentText == "-") {
+        this.currentText = "-0.";
     } else {
         this.currentText += ".";
+        this.currentState = Calculator.state.digitEntry;
     }
-    this.currentState = Calculator.state.digitEntry;
 };
 
 Calculator.appendNegativeSign = function() {
