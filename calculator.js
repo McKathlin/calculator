@@ -183,7 +183,7 @@ Calculator._currentState = Calculator.state.clear;
 Object.defineProperties(Calculator, {
     currentNumber: {
         get: function() {
-            if (this.currentText == null) {
+            if (this.currentText == null || this.currentText == "-") {
                 return null;
             } else {
                 return Number.parseFloat(this.currentText);
