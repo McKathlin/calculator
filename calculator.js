@@ -374,6 +374,7 @@ Calculator.setBinaryOperator = function(operatorName) {
 
     if (this.currentState == Calculator.state.error) {
         // Can't set an operator during an error.
+        this.setError("CANNOT");
         return;
     }
 
