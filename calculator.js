@@ -309,7 +309,7 @@ Calculator.appendDigit = function(digit) {
         this.currentText = null; // Prepare to take a new number
     }
     // Append the digit.
-    if (!this.currentText || this.currentText == Calculator.EMPTY_TEXT) {
+    if (!Calculator.currentText || Calculator.currentText == Calculator.EMPTY_TEXT) {
         this.currentText = digit;
     } else {
         this.currentText += digit;
@@ -324,7 +324,7 @@ Calculator.appendDecimalPoint = function() {
         return;
     }
 
-    if (Calculator.isClearText()) {
+    if (Calculator.isEmpty()) {
         this.currentText = "0.";
     } else {
         this.currentText += ".";
