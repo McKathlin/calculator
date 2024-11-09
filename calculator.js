@@ -153,9 +153,6 @@ Calculator.updateUI = function() {
 //-----------------------------------------------------------------------------
 
 Calculator.EMPTY_TEXT = "0";
-Calculator.OVERFLOW_TEXT = "OVERFLOW";
-Calculator.CONFUSED_TEXT = "WHAT";
-Calculator.INFINITY_TEXT = "NOPE";
 Calculator.MAX_OUTPUT_LENGTH = 12;
 Calculator.ELLIPSIS = "\u{2026}";
 
@@ -328,9 +325,7 @@ Calculator.appendDecimalPoint = function() {
         this.clear();
     }
 
-    if (this.currentText == "-") {
-        this.currentText = "-0.";
-    } else if (this.isEmpty()) {
+    if (this.isEmpty() && currentText && !currentText.startsWith("-")) {
         this.currentText = "0.";
     } else if (this.isFull()) {
         return; // Ignore the request to append.
