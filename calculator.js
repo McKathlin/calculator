@@ -222,11 +222,11 @@ Object.defineProperties(Calculator, {
         set: function(value) {
             if (value == this._currentText) {
                 return; // No change.
-            } else if (value === null) {
-                // This will make the display fall through to previous text.
-                this._currentText = null;
             } else if (value === "") {
                 this._currentText = this.EMPTY_TEXT;
+            } else if (!value) {
+                // This will make the display fall through to previous text.
+                this._currentText = null;
             } else if (value.length > this.MAX_OUTPUT_LENGTH) {
                 const ellipsisBufferLength = this.MAX_OUTPUT_LENGTH - 2;
                 let preDecimalLength = value.indexOf('.');
