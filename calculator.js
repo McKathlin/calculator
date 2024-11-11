@@ -209,7 +209,6 @@ Object.defineProperties(Calculator, {
         },
         set: function(value) {
             if (this._currentState !== value) {
-                console.log("state set to", value);
                 this._currentState = value;
             }
         }
@@ -269,7 +268,6 @@ Object.defineProperties(Calculator, {
 //-----------------------------------------------------------------------------
 
 Calculator.backspace = function() {
-    console.log(this.currentState);
     if (this.currentState == Calculator.state.error) {
         // Clear error.
         this.clear();
