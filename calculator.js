@@ -208,7 +208,9 @@ Object.defineProperties(Calculator, {
             return this._currentState;
         },
         set: function(value) {
-            if (this._currentState !== value) {
+            if (this._currentState == Calculator.state.error) {
+                console.warn("Can't change current state from error!");
+            } else if (this._currentState !== value) {
                 this._currentState = value;
             }
         }
@@ -359,6 +361,18 @@ Calculator.appendNegativeSign = function() {
 };
 
 Calculator.setBinaryOperator = function(operatorName) {
+    if (this.currentState == Calculator.state.error) {
+        // Can't set an operator during an error.
+        this.setError("CANNOT");
+        return;
+    }
+
+    this.evaluate(); // Calculate previous operation, if any
+    if (this.currentState == Calculator.state.error) {
+        // Return early
+        return;
+    }
+
     // Standardize the operator name for checks.
     operatorName = Calculator.getFunctionNameForOperator(operatorName);
 
@@ -370,12 +384,6 @@ Calculator.setBinaryOperator = function(operatorName) {
         }
     }
 
-    if (this.currentState == Calculator.state.error) {
-        // Can't set an operator during an error.
-        this.setError("CANNOT");
-        return;
-    }
-
     if (this.currentState == Calculator.state.postOp) {
         // Just change the active operator.
         this.operator = operatorName;
@@ -383,7 +391,6 @@ Calculator.setBinaryOperator = function(operatorName) {
     }
 
     // Set the operator normally.
-    this.evaluate(); // Calculate previous operation, if any
     this.operator = operatorName;
     this.previousNumber = this.currentNumber;
     this.currentNumber = null;
@@ -408,9 +415,7 @@ Calculator.evaluate = function() {
     }
     this.previousNumber = null;
 
-    if (this.currentState != Calculator.state.error) {
-        this.currentState = Calculator.state.postEval;
-    }
+    this.currentState = Calculator.state.postEval;
 };
 
 Calculator.applySquareRoot = function() {
@@ -467,8 +472,11 @@ Calculator.square = function(num) {
 //-----------------------------------------------------------------------------
 
 Calculator.isEmpty = function() {
+    if (this.currentState == Calculator.state.error) {
+        return false;
+    }
     return this.currentText == Calculator.EMPTY_TEXT
-    || !this.currentText || !this.currentNumber;
+        || !this.currentText || !this.currentNumber;
 };
 
 Calculator.isFull = function() {
