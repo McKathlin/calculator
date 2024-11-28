@@ -195,8 +195,14 @@ Object.defineProperties(Calculator, {
             } else {
                 let text = value.toString();
                 if (text.toLowerCase().includes("e")) {
-                    // This calculator does not support E notation.
-                    this.setError("ERROR");
+                    if (value < 1 && value > -1) {
+                        // This value is in E notation because it's too close to 0
+                        this.setError("UNDERFLOW");
+                    } else {
+                        // This value is in E notation because it's
+                        // on an extreme on the number line.
+                        this.setError("OVERFLOW");
+                    }
                 } else {
                     this.currentText = text;
                 }
