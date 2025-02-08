@@ -319,8 +319,10 @@ Calculator.appendDigit = function(digit) {
     }
 
     // Append the digit.
-    if (!Calculator.currentText || Calculator.currentText == Calculator.EMPTY_TEXT) {
+    if (!this.currentText || Calculator.EMPTY_TEXT == this.currentText) {
         this.currentText = digit;
+    } else if ('-' == this.currentText && '0' == digit) {
+        // Take no action. Leave the negative sign by itself.
     } else {
         this.currentText += digit;
     }
@@ -481,14 +483,13 @@ Calculator.isEmpty = function() {
     if (this.currentState == Calculator.state.error) {
         return false;
     }
-    return this.currentText == Calculator.EMPTY_TEXT
-        || !this.currentText || !this.currentNumber;
+    return this.currentText == Calculator.EMPTY_TEXT ||
+        !this.currentText || !this.currentNumber;
 };
 
 Calculator.isFull = function() {
-    return this.currentText
-        && this.currentState != Calculator.state.error
-        && this.currentText.length >= this.MAX_OUTPUT_LENGTH;
+    return this.currentText && this.currentState != Calculator.state.error &&
+        this.currentText.length >= this.MAX_OUTPUT_LENGTH;
 };
 
 Calculator.setError = function(errorMessage = "ERROR") {
